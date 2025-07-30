@@ -1,0 +1,13 @@
+{
+  "kierowcy": [
+    {
+      "name": "PRZYKLADOWY_KIEROWCA",
+      "lat": 52.2297,
+      "lon": 21.0122,
+      "city": "Warszawa",
+      "speed": 82,
+      "fuel": 340,
+      "cargo": "Kontener 40ft"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>BALMEX EXPRESS - Live Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #map {
+      flex: 3;
+    }
+    #dashboard {
+      flex: 1;
+      background-color: #f8f8f8;
+      padding: 10px;
+      overflow-y: auto;
+      border-left: 2px solid #ccc;
+    }
+    .driver {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="dashboard">
+    <h2>Aktywni Kierowcy</h2>
+    <div id="driverList">Ładowanie...</div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([52.2297, 21.0122], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let markers = [];
+
+    async function fetchPositions() {
+      const res = await fetch("positions.json?ts=" + new Date().getTime());
+      const data = await res.json();
+      const driverList = document.getElementById("driverList");
+      driverList.innerHTML = "";
+
+      // Usuwanie starych markerów
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+
+      data.kierowcy.forEach(k => {
+        // Marker
+        const marker = L.marker([k.lat, k.lon]).addTo(map)
+          .bindPopup(`<b>${k.name}</b><br>${k.city || "Lokalizacja nieznana"}`);
+        markers.push(marker);
+
+        // Panel info
+        const div = document.createElement("div");
+        div.className = "driver";
+        div.innerHTML = `<strong>${k.name}</strong><br>
+                         Miasto: ${k.city || "–"}<br>
+                         Prędkość: ${k.speed} km/h<br>
+                         Stan paliwa: ${k.fuel || "?"} L<br>
+                         Ładunek: ${k.cargo || "Brak info"}`;
+        driverList.appendChild(div);
+      });
+    }
+
+    setInterval(fetchPositions, 5000);
+    fetchPositions();
+  </script>
+</body>
+</html>
