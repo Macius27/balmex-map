@@ -28,7 +28,7 @@
 
     const driverLayer = {};
     async function updateDrivers() {
-      const res = await fetch('https://balmex-map.onrender.com/positions.json');
+      const res = await fetch('https://ad806484-aeed-4172-b96d-393019f1fc88-00-pxz63aibrsbu.janeway.replit.dev/positions.json');
       const data = await res.json();
       document.getElementById('drivers').innerHTML = '';
       for (const driver of data) {
